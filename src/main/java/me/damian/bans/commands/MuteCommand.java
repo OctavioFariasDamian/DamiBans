@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static me.damian.bans.DamiBans.prefix;
@@ -107,11 +108,10 @@ public class MuteCommand implements TabExecutor {
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String @NotNull [] args) {
-    if (args.length == 1) {
-            return filterSuggestions(sender.getServer().getOnlinePlayers().stream()
-                    .map(Player::getName)
-                    .filter(name -> name.toLowerCase().startsWith(args[0].toLowerCase()))
-                    .toList(), args[0]);
+        if (args.length == 1) {
+            return filterSuggestions(
+                    Arrays.stream(sender.getServer().getOfflinePlayers()).map(OfflinePlayer::getName).toList(), args[0]
+            );
         } else if (args.length == 2) {
             return filterSuggestions(List.of("30s", "1m", "5m", "10m", "30m", "1h", "2h", "6h", "12h", "1d", "3d", "7d", "30d", "permanent", "permanente"), args[1]);
         }else if (args.length > 2) {

@@ -1,6 +1,9 @@
 package me.damian.bans.commands;
 
 import me.damian.bans.managers.DataManager;
+import me.damian.bans.model.Punishment;
+import me.damian.bans.model.PunishmentType;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -10,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 import static me.damian.bans.DamiBans.prefix;
+import static me.damian.core.DamiUtils.filterSuggestions;
 import static me.damian.core.DamiUtils.sendMessageWithPrefix;
 
 public class UnmuteCommand implements TabExecutor {
@@ -36,6 +40,13 @@ public class UnmuteCommand implements TabExecutor {
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String @NotNull [] args) {
+        if(args.length == 1) {
+            return filterSuggestions(
+                    DataManager.getAllPunishments().stream().filter(punishment -> punishment.getType() == PunishmentType.MUTE)
+                            .map(Punishment::getPlayer)
+                            .map(OfflinePlayer::getName).toList(), args[0]
+            );
+        }
         return List.of();
     }
 }

@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static me.damian.bans.DamiBans.prefix;
@@ -64,11 +65,7 @@ public class WarnsCommand implements TabExecutor {
     public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String @NotNull [] args) {
         if (args.length == 1) {
             return filterSuggestions(
-                    commandSender.getServer().getOnlinePlayers().stream()
-                            .map(Player::getName)
-                            .filter(name -> name.toLowerCase().startsWith(args[0].toLowerCase()))
-                            .toList(),
-                    args[0]
+                    Arrays.stream(commandSender.getServer().getOfflinePlayers()).map(OfflinePlayer::getName).toList(), args[0]
             );
         }
         return List.of();

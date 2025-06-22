@@ -1,3 +1,4 @@
+#file: noinspection YAMLSchemaValidation
 name: DamiBans
 version: '1.0'
 main: me.damian.bans.DamiBans
@@ -14,3 +15,5 @@ commands:
   unmute:
   ban:
   unban:
+  punishments:
+  checkplayer:

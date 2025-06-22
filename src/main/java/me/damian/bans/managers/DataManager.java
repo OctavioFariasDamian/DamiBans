@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -123,35 +124,13 @@ public class DataManager {
         DamiBans.getInstance().saveConfig();
 
         if(player.isOnline() && player.getPlayer() != null && type == PunishmentType.BAN) {
-            String expiresString;
-            if (punishment.isPermanent()) {
-                expiresString = "Nunca";
-            } else {
-                LocalDateTime expiresAt = punishment.getExpiresAt();
-                Duration duration = Duration.between(now, expiresAt);
-                if (duration.isNegative()) {
-                    expiresString = "Expirado (espera un poco para poder unirte)";
-                } else {
-                    long totalSeconds = duration.getSeconds();
-                    long years = (long) (totalSeconds / (60 * 60 * 24 * 365.25));
-                    totalSeconds %= (60 * 60 * 24 * 30 * 12);
-                    long months = (long) (totalSeconds / (60 * 60 * 24 * 30.4375));
-                    totalSeconds %= (60 * 60 * 24 * 30);
-                    long days = totalSeconds / (60 * 60 * 24);
-                    totalSeconds %= (60 * 60 * 24);
-                    long hours = totalSeconds / (60 * 60);
-                    totalSeconds %= (60 * 60);
-                    long minutes = totalSeconds / 60;
-                    long seconds = totalSeconds % 60;
-                    expiresString = String.format("%dy %dmo %dd %dh %dm %ds", years, months, days, hours, minutes, seconds);
-                }
-            }
+            String expiresString = permanent ? "Nunca" : getReamingTime(punishment.getExpiresAt());
             String kickMessage = "#FFFF00&lS#FFFC0C&lu#FFF818&lp#FFF524&lr#FFF230&le#FFEE3C&lm#FFEB48&le#40FAF5&lM#00F5FF&lC\n\n" +
                     "&cHas sido baneado del servidor.\n\n\n"+
                     "&cRazón: &f" + punishment.getReason() + "\n" +
                     "&cStaff: &f" + punishment.getStaff() + "\n" +
                     "&cFecha: &f" + punishment.getCreatedAt().toLocalDate() + "\n" +
-                    "&cExpira: &f" + expiresString + "\n\n"+
+                    "&cExpira: &f" + (expiresString != null ? expiresString : "Expirado (Espere un minuto para poder ingresar)") + "\n\n"+
                     "&cSi crees que esto es un error, contacta con el staff del servidor." +
                     "\n&c¡Gracias por tu comprensión!";
 
@@ -270,5 +249,29 @@ public class DataManager {
             sendMessageWithPrefix(onlinePlayer, "&fEl jugador &e" + playerName + " &fha sido desbaneado.", prefix);
         }
         return true;
+    }
+
+    public static String getReamingTime(LocalDateTime objetivo) {
+        LocalDateTime ahora = LocalDateTime.now();
+        if (!objetivo.isAfter(ahora)) {
+            return null;
+        }
+
+        Period periodo = Period.between(ahora.toLocalDate(), objetivo.toLocalDate());
+        LocalDateTime intermedio = ahora.plusYears(periodo.getYears()).plusMonths(periodo.getMonths()).plusDays(periodo.getDays());
+        Duration duration = Duration.between(intermedio, objetivo);
+
+        StringBuilder sb = new StringBuilder();
+        if (periodo.getYears() > 0) sb.append(periodo.getYears()).append("año(s) ");
+        if (periodo.getMonths() > 0) sb.append(periodo.getMonths()).append("mes(es) ");
+        if (periodo.getDays() > 0) sb.append(periodo.getDays()).append("día(s) ");
+        long horas = duration.toHours();
+        if (horas > 0) sb.append(horas).append("hora(s) ");
+        int minutos = duration.toMinutesPart();
+        if (minutos > 0) sb.append(minutos).append("min ");
+        int segundos = duration.toSecondsPart();
+        if (segundos > 0) sb.append(segundos).append("seg");
+
+        return sb.toString().trim();
     }
 }

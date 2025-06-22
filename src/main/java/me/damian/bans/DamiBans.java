@@ -52,6 +52,13 @@ public final class DamiBans extends JavaPlugin {
 
         getCommand("unban").setExecutor(new UnbanCommand());
         getCommand("unban").setTabCompleter(new UnbanCommand());
+
+        getCommand("checkplayer").setExecutor(new CheckPlayerCommand());
+        getCommand("checkplayer").setTabCompleter(new CheckPlayerCommand());
+
+        getCommand("punishments").setExecutor(new PunishmentsCommand());
+        getCommand("punishments").setTabCompleter(new PunishmentsCommand());
+
     }
 
     @Override
