@@ -8,12 +8,14 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import static me.damian.bans.DamiBans.prefix;
+import static me.damian.core.DamiUtils.colorize;
 import static me.damian.core.DamiUtils.sendMessageWithPrefix;
 
 public class DataManager {
@@ -89,6 +91,7 @@ public class DataManager {
         return new ArrayList<>(punishments);
     }
 
+    @SuppressWarnings("deprecation")
     public static void createPunishment(OfflinePlayer player, String reason, String staff, boolean permanent, long secondsDuration, PunishmentType type) {
         int id = nextId++;
         LocalDateTime now = LocalDateTime.now();
@@ -118,6 +121,42 @@ public class DataManager {
 
         section.set("type", type.name());
         DamiBans.getInstance().saveConfig();
+
+        if(player.isOnline() && player.getPlayer() != null && type == PunishmentType.BAN) {
+            String expiresString;
+            if (punishment.isPermanent()) {
+                expiresString = "Nunca";
+            } else {
+                LocalDateTime expiresAt = punishment.getExpiresAt();
+                Duration duration = Duration.between(now, expiresAt);
+                if (duration.isNegative()) {
+                    expiresString = "Expirado (espera un poco para poder unirte)";
+                } else {
+                    long totalSeconds = duration.getSeconds();
+                    long years = (long) (totalSeconds / (60 * 60 * 24 * 365.25));
+                    totalSeconds %= (60 * 60 * 24 * 30 * 12);
+                    long months = (long) (totalSeconds / (60 * 60 * 24 * 30.4375));
+                    totalSeconds %= (60 * 60 * 24 * 30);
+                    long days = totalSeconds / (60 * 60 * 24);
+                    totalSeconds %= (60 * 60 * 24);
+                    long hours = totalSeconds / (60 * 60);
+                    totalSeconds %= (60 * 60);
+                    long minutes = totalSeconds / 60;
+                    long seconds = totalSeconds % 60;
+                    expiresString = String.format("%dy %dmo %dd %dh %dm %ds", years, months, days, hours, minutes, seconds);
+                }
+            }
+            String kickMessage = "#FFFF00&lS#FFFC0C&lu#FFF818&lp#FFF524&lr#FFF230&le#FFEE3C&lm#FFEB48&le#40FAF5&lM#00F5FF&lC\n\n" +
+                    "&cHas sido baneado del servidor.\n\n\n"+
+                    "&cRazón: &f" + punishment.getReason() + "\n" +
+                    "&cStaff: &f" + punishment.getStaff() + "\n" +
+                    "&cFecha: &f" + punishment.getCreatedAt().toLocalDate() + "\n" +
+                    "&cExpira: &f" + expiresString + "\n\n"+
+                    "&cSi crees que esto es un error, contacta con el staff del servidor." +
+                    "\n&c¡Gracias por tu comprensión!";
+
+            player.getPlayer().kickPlayer(colorize(kickMessage));
+        }
     }
 
     public static void scheduleExpirations(){
@@ -184,7 +223,7 @@ public class DataManager {
 
     public static Punishment getFirstBanPunishment(String name) {
         for (Punishment punishment : punishments) {
-            if (punishment.getPlayer().getName().equals(name) && punishment.getType() == PunishmentType.BAN) {
+            if (Objects.equals(punishment.getPlayer().getName(), name) && punishment.getType() == PunishmentType.BAN) {
                 return punishment;
             }
         }
@@ -214,6 +253,21 @@ public class DataManager {
         DamiBans.getInstance().saveConfig();
         for(Player onlinePlayer : Bukkit.getOnlinePlayers()) {
             sendMessageWithPrefix(onlinePlayer, "&fEl jugador &e" + playerName + " &fha sido desmuteado.", prefix);
+        }
+        return true;
+    }
+
+    public static boolean unbanPlayer(String playerName) {
+        List<Punishment> playerBans = getPlayerPunishmentsForType(playerName, PunishmentType.BAN);
+        if (playerBans.isEmpty()) {
+            return false;
+        }
+        Punishment ban = playerBans.getFirst();
+        punishments.remove(ban);
+        DamiBans.getInstance().getConfig().set(String.valueOf(ban.getId()), null);
+        DamiBans.getInstance().saveConfig();
+        for(Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+            sendMessageWithPrefix(onlinePlayer, "&fEl jugador &e" + playerName + " &fha sido desbaneado.", prefix);
         }
         return true;
     }

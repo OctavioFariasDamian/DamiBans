@@ -15,29 +15,29 @@ import java.util.List;
 
 import static me.damian.bans.DamiBans.prefix;
 import static me.damian.core.DamiUtils.*;
-import static me.damian.core.DamiUtils.sendMessage;
+import static me.damian.core.DamiUtils.filterSuggestions;
 
-public class MuteCommand implements TabExecutor {
+public class BanCommand implements TabExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String @NotNull [] args) {
-        if (!sender.hasPermission("dami-bans.mute")) {
-            sendMessageWithPrefix(sender, "&cNo tienes permisos.", prefix);
-            return false;
-        }
-        if (args.length < 2) {
-            sendMessageWithPrefix(sender, "&cEl uso del comando es: /mute <jugador> <duración> <razón>", prefix);
+        if (!sender.hasPermission("dami-bans.ban")) {
+            sendMessageWithPrefix(sender, "&cNo tienes permisos para banear jugadores.", prefix);
             return false;
         }
 
+        if (args.length < 2) {
+            sendMessageWithPrefix(sender, "&cEl uso del comando es: /ban <jugador> <duración> <razón>", prefix);
+            return false;
+        }
         OfflinePlayer player = sender.getServer().getOfflinePlayer(args[0]);
 
-        if(!player.hasPlayedBefore()) {
+        if (!player.hasPlayedBefore()) {
             sendMessageWithPrefix(sender, "&cEl jugador no existe o nunca ha jugado en el servidor.", prefix);
             return false;
         }
 
-        if(!DataManager.getPlayerPunishmentsForType(player.getName(), PunishmentType.MUTE).isEmpty()){
-            sendMessageWithPrefix(sender, "&cEl jugador ya está silenciado.", prefix);
+        if (!DataManager.getPlayerPunishmentsForType(player.getName(), PunishmentType.BAN).isEmpty()) {
+            sendMessageWithPrefix(sender, "&cEl jugador ya está baneado.", prefix);
             return false;
         }
 
@@ -45,7 +45,7 @@ public class MuteCommand implements TabExecutor {
 
         long seconds = DataManager.convertToSeconds(duration);
 
-        if(duration.equalsIgnoreCase("permanent") || duration.equalsIgnoreCase("permanente")) {
+        if (duration.equalsIgnoreCase("permanent") || duration.equalsIgnoreCase("permanente")) {
             seconds = -1;
         } else if (seconds == -1) {
             sendMessageWithPrefix(sender, "&cLa duración debe ser un número válido seguido de &cy&l, &lmo&c, &ld&c, &lh&c, &lm &co &ls&c).", prefix);
@@ -53,7 +53,7 @@ public class MuteCommand implements TabExecutor {
         }
 
         StringBuilder sb = new StringBuilder();
-        if(args.length > 2) {
+        if (args.length > 2) {
             for (int i = 2; i < args.length; i++) {
                 sb.append(args[i]).append(" ");
             }
@@ -66,12 +66,13 @@ public class MuteCommand implements TabExecutor {
                 sender instanceof Player ? sender.getName() : "Consola",
                 seconds == -1,
                 seconds,
-                PunishmentType.MUTE
+                PunishmentType.BAN
         );
-        sendMessageWithPrefix(sender, "&fHas silenciado a &e" + player.getName() + "&f por: &e" + (!reason.isBlank() ? reason : "Sin Razón") + " &fdurante: &e" + (seconds == -1 ? "tiempo permanente" : duration), prefix);
+
+        sendMessageWithPrefix(sender, "&fHas baneado a &e" + player.getName() + "&f por: &e" + (!reason.isBlank() ? reason : "Sin Razón") + " &fdurante: &e" + (seconds == -1 ? "tiempo permanente" : duration), prefix);
         for (Player p : Bukkit.getOnlinePlayers()) {
             sendMessage(p, "<underline:#9131de");
-            sendMessage(p, "<center>#9131de&lMUTEO");
+            sendMessage(p, "<center>#9131de&lBANEO");
             sendMessage(p, "");
             sendMessage(p, "<center>#9131de&lJugador");
             sendMessage(p, "<center>&f" + player.getName());
@@ -88,7 +89,7 @@ public class MuteCommand implements TabExecutor {
         }
 
         sendMessage(Bukkit.getConsoleSender(), "<underline:#9131de");
-        sendMessage(Bukkit.getConsoleSender(), "<center>#9131de&lMUTEO");
+        sendMessage(Bukkit.getConsoleSender(), "<center>#9131de&lBANEO");
         sendMessage(Bukkit.getConsoleSender(), "");
         sendMessage(Bukkit.getConsoleSender(), "<center>#9131de&lJugador");
         sendMessage(Bukkit.getConsoleSender(), "<center>&f" + player.getName());
@@ -107,14 +108,14 @@ public class MuteCommand implements TabExecutor {
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String @NotNull [] args) {
-    if (args.length == 1) {
+        if (args.length == 1) {
             return filterSuggestions(sender.getServer().getOnlinePlayers().stream()
                     .map(Player::getName)
                     .filter(name -> name.toLowerCase().startsWith(args[0].toLowerCase()))
                     .toList(), args[0]);
         } else if (args.length == 2) {
             return filterSuggestions(List.of("30s", "1m", "5m", "10m", "30m", "1h", "2h", "6h", "12h", "1d", "3d", "7d", "30d", "permanent", "permanente"), args[1]);
-        }else if (args.length > 2) {
+        } else if (args.length > 2) {
             return List.of("<Razón...>");
         }
         return List.of();

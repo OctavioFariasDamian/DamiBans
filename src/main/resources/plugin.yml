@@ -12,3 +12,5 @@ commands:
     aliases: [delwarn]
   mute:
   unmute:
+  ban:
+  unban:
