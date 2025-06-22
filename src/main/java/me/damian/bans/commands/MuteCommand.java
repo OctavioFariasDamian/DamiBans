@@ -30,6 +30,17 @@ public class MuteCommand implements TabExecutor {
         }
 
         OfflinePlayer player = sender.getServer().getOfflinePlayer(args[0]);
+
+        if(!player.hasPlayedBefore()) {
+            sendMessageWithPrefix(sender, "&cEl jugador no existe o nunca ha jugado en el servidor.", prefix);
+            return false;
+        }
+
+        if(!DataManager.getPlayerPunishmentsForType(player.getName(), PunishmentType.MUTE).isEmpty()){
+            sendMessageWithPrefix(sender, "&cEl jugador ya está silenciado.", prefix);
+            return false;
+        }
+
         String duration = args[1];
 
         long seconds = DataManager.convertToSeconds(duration);

@@ -6,11 +6,15 @@ import me.damian.bans.model.PunishmentType;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import static me.damian.bans.DamiBans.prefix;
+import static me.damian.core.DamiUtils.sendMessageWithPrefix;
 
 public class DataManager {
 
@@ -197,5 +201,20 @@ public class DataManager {
             }
         }
         return false;
+    }
+
+    public static boolean unmutePlayer(String playerName) {
+        List<Punishment> playerMutes = getPlayerPunishmentsForType(playerName, PunishmentType.MUTE);
+        if (playerMutes.isEmpty()) {
+            return false;
+        }
+        Punishment mute = playerMutes.getFirst();
+        punishments.remove(mute);
+        DamiBans.getInstance().getConfig().set(String.valueOf(mute.getId()), null);
+        DamiBans.getInstance().saveConfig();
+        for(Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+            sendMessageWithPrefix(onlinePlayer, "&fEl jugador &e" + playerName + " &fha sido desmuteado.", prefix);
+        }
+        return true;
     }
 }

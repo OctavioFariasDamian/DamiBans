@@ -11,3 +11,4 @@ commands:
   deletewarn:
     aliases: [delwarn]
   mute:
+  unmute:
