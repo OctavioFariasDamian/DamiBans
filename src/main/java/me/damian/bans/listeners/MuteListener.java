@@ -32,7 +32,7 @@ public class MuteListener implements Listener {
                 sendMessageWithPrefix(event.getPlayer(), "&cEstás silenciado y no puedes hablar en el chat de tu reino.", DamiBans.prefix);
             }
         }
-        if (mutedCommands.stream().anyMatch(command::equalsIgnoreCase)) {
+        if (mutedCommands.contains(command.split(" ")[0])) {
             if (!DataManager.getPlayerPunishmentsForType(event.getPlayer().getName(), PunishmentType.MUTE).isEmpty()) {
                 event.setCancelled(true);
                 sendMessageWithPrefix(event.getPlayer(), "&cEstás silenciado y no puedes hablar por susurro.", DamiBans.prefix);
