@@ -7,10 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.Period;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -188,5 +185,17 @@ public class DataManager {
             }
         }
         return null;
+    }
+
+    public static boolean deleteWarn(int id) {
+        for (Punishment punishment : punishments) {
+            if (punishment.getId() == id && punishment.getType() == PunishmentType.WARN) {
+                punishments.remove(punishment);
+                DamiBans.getInstance().getConfig().set(String.valueOf(id), null);
+                DamiBans.getInstance().saveConfig();
+                return true;
+            }
+        }
+        return false;
     }
 }

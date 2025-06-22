@@ -3,6 +3,7 @@ package me.damian.bans;
 import lombok.Getter;
 import me.damian.bans.commands.*;
 import me.damian.bans.listeners.LoginListeners;
+import me.damian.bans.listeners.MuteListener;
 import me.damian.bans.managers.DataManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -21,6 +22,7 @@ public final class DamiBans extends JavaPlugin {
         DataManager.scheduleExpirationsTask(this);
 
         getServer().getPluginManager().registerEvents(new LoginListeners(), this);
+        getServer().getPluginManager().registerEvents(new MuteListener(), this);
         registerCommands();
     }
 
@@ -34,6 +36,12 @@ public final class DamiBans extends JavaPlugin {
 
         getCommand("warns").setExecutor(new WarnsCommand());
         getCommand("warns").setTabCompleter(new WarnsCommand());
+
+        getCommand("deletewarn").setExecutor(new DeleteWarnCommand());
+        getCommand("deletewarn").setTabCompleter(new DeleteWarnCommand());
+
+        getCommand("mute").setExecutor(new MuteCommand());
+        getCommand("mute").setTabCompleter(new MuteCommand());
     }
 
     @Override

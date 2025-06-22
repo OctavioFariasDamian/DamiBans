@@ -8,3 +8,6 @@ commands:
   kick:
   warn:
   warns:
+  deletewarn:
+    aliases: [delwarn]
+  mute:
