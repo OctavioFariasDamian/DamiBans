@@ -37,7 +37,7 @@ public class KickCommand implements TabExecutor {
 
         String reason = sb.toString().trim();
         if (player.isOnline()) {
-            String kickMessage = "#FFFF00&lS#FFFC0C&lu#FFF818&lp#FFF524&lr#FFF230&le#FFEE3C&lm#FFEB48&le#40FAF5&lM#00F5FF&lC\n\n" +
+            String kickMessage = "&x&F&F&F&2&0&0&lS&x&F&F&F&5&3&0&lu&x&F&F&F&7&6&0&lp&x&F&F&F&9&9&0&lr&x&F&F&F&A&A&0&le&x&F&F&F&9&9&0&lm&x&F&F&F&7&6&0&le&x&8&0&F&7&F&F&lM&x&0&0&E&F&F&F&lC\n\n" +
                     "&cHas sido expulsado del servidor.\n\n\n"+
                     "&cRazón: &f" + reason + "\n" +
                     "&cStaff: &f" + (sender instanceof Player ? sender.getName() : "Consola");
