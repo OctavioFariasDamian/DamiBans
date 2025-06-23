@@ -6,6 +6,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
+import org.codehaus.plexus.util.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,7 +39,7 @@ public class PunishmentsCommand implements TabExecutor {
 
         sendMessageWithPrefix(sender, "&fSanciones del jugador &e" + playerName + ":", prefix);
         for (Punishment p : punishments) {
-            String message = "&7 > &fID: &e" + p.getId() + " &f| &cRazón: &e" + p.getReason() + " &f| &cStaff: &e" + p.getStaff() + " &f| &cFecha: &e" + p.getCreatedTimeFormatted()+ " UTC &f| &cExpira: &e" + (p.isPermanent() ? "Nunca" : DataManager.getReamingTime(p.getExpiresAt()));
+            String message = "&7 > &fID: &e" + p.getId() + " &f| &cTipo: &e"+ StringUtils.capitalise(p.getType().name().toLowerCase())+" &f| &cRazón: &e" + p.getReason() + " &f| &cStaff: &e" + p.getStaff() + " &f| &cFecha: &e" + p.getCreatedTimeFormatted()+ " UTC &f| &cExpira: &e" + (p.isPermanent() ? "Nunca" : DataManager.getReamingTime(p.getExpiresAt()));
             sendMessage(sender, message);
         }
         return true;
