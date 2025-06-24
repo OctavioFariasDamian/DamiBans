@@ -1,6 +1,7 @@
 package me.damian.bans.commands;
 
 import me.damian.bans.managers.DataManager;
+import me.damian.bans.menu.BanMenu;
 import me.damian.bans.model.PunishmentType;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -26,11 +27,35 @@ public class BanCommand implements TabExecutor {
             return false;
         }
 
-        if (args.length < 2) {
+        if (args.length == 0) {
             sendMessageWithPrefix(sender, "&cEl uso del comando es: /ban <jugador> <duración> <razón>", prefix);
             return false;
         }
-        OfflinePlayer player = sender.getServer().getOfflinePlayer(args[0]);
+
+        OfflinePlayer player;
+
+        if(args.length == 1){
+            if(!(sender instanceof Player)) {
+                sendMessageWithPrefix(sender, "&cDebes especificar una duración.", prefix);
+                return false;
+            }
+
+            player = sender.getServer().getOfflinePlayer(args[0]);
+            if(!player.hasPlayedBefore()) {
+                sendMessageWithPrefix(sender, "&cEl jugador no existe o nunca ha jugado en el servidor.", prefix);
+                return false;
+            }
+
+            if (!DataManager.getPlayerPunishmentsForType(player.getName(), PunishmentType.BAN).isEmpty()) {
+                sendMessageWithPrefix(sender, "&cEl jugador ya está baneado.", prefix);
+                return false;
+            }
+
+            new BanMenu(player.getName()).open((Player) sender);
+            return false;
+        }
+
+        player = sender.getServer().getOfflinePlayer(args[0]);
 
         if (!player.hasPlayedBefore()) {
             sendMessageWithPrefix(sender, "&cEl jugador no existe o nunca ha jugado en el servidor.", prefix);
@@ -71,39 +96,21 @@ public class BanCommand implements TabExecutor {
         );
 
         sendMessageWithPrefix(sender, "&fHas baneado a &e" + player.getName() + "&f por: &e" + (!reason.isBlank() ? reason : "Sin Razón") + " &fdurante: &e" + (seconds == -1 ? "tiempo permanente" : duration), prefix);
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            sendMessage(p, "<underline:#9131de");
-            sendMessage(p, "<center>#9131de&lBANEO");
-            sendMessage(p, "");
-            sendMessage(p, "<center>#9131de&lJugador");
-            sendMessage(p, "<center>&f" + player.getName());
-            sendMessage(p, "");
-            sendMessage(p, "<center>#9131de&lRazón");
-            sendMessage(p, "<center>&f" + reason);
-            sendMessage(p, "");
-            sendMessage(p, "<center>#9131de&lDuración");
-            sendMessage(p, "<center>&f" + (seconds == -1 ? "Permanente" : duration));
-            sendMessage(p, "");
-            sendMessage(p, "<center>#9131de&lStaff");
-            sendMessage(p, "<center>&f" + (sender instanceof Player ? sender.getName() : "Consola"));
-            sendMessage(p, "<underline:#9131de");
+        Bukkit.broadcastMessage(colorize("#C96FFF&m&l*                                     *"));
+        Bukkit.broadcastMessage(colorize("        #C96FFF&lBANEO "+
+                (seconds == -1 ? "&cPERMA" : "")));
+        Bukkit.broadcastMessage(colorize(""));
+        Bukkit.broadcastMessage(colorize("        #C96FFFJugador"));
+        Bukkit.broadcastMessage(colorize("         &7» &f" + player.getName()));
+        Bukkit.broadcastMessage(colorize("        #C96FFFRazón"));
+        Bukkit.broadcastMessage(colorize("         &7» &f" + reason+" ("+DataManager.getPunishmentCountForReasonAndType(player.getName(), reason, PunishmentType.WARN)+"/5)"));
+        if(seconds != -1){
+            Bukkit.broadcastMessage(colorize("        #C96FFFDuración"));
+            Bukkit.broadcastMessage(colorize("         &7» &f" + duration));
         }
-
-        sendMessage(Bukkit.getConsoleSender(), "<underline:#9131de");
-        sendMessage(Bukkit.getConsoleSender(), "<center>#9131de&lBANEO");
-        sendMessage(Bukkit.getConsoleSender(), "");
-        sendMessage(Bukkit.getConsoleSender(), "<center>#9131de&lJugador");
-        sendMessage(Bukkit.getConsoleSender(), "<center>&f" + player.getName());
-        sendMessage(Bukkit.getConsoleSender(), "");
-        sendMessage(Bukkit.getConsoleSender(), "<center>#9131de&lRazón");
-        sendMessage(Bukkit.getConsoleSender(), "<center>&f" + reason);
-        sendMessage(Bukkit.getConsoleSender(), "");
-        sendMessage(Bukkit.getConsoleSender(), "<center>#9131de&lDuración");
-        sendMessage(Bukkit.getConsoleSender(), "<center>&f" + (seconds == -1 ? "Permanente" : duration));
-        sendMessage(Bukkit.getConsoleSender(), "");
-        sendMessage(Bukkit.getConsoleSender(), "<center>#9131de&lStaff");
-        sendMessage(Bukkit.getConsoleSender(), "<center>&f" + (sender instanceof Player ? sender.getName() : "Consola"));
-        sendMessage(Bukkit.getConsoleSender(), "<underline:#9131de");
+        Bukkit.broadcastMessage(colorize("        #C96FFFStaff"));
+        Bukkit.broadcastMessage(colorize("         &7» &f" + (sender instanceof Player ? sender.getName() : "Consola")));
+        Bukkit.broadcastMessage(colorize("#C96FFF&m&l*                                     *"));
         return false;
     }
 

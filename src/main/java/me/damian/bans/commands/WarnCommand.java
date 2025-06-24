@@ -18,6 +18,7 @@ import static me.damian.bans.DamiBans.prefix;
 import static me.damian.core.DamiUtils.*;
 
 public class WarnCommand implements TabExecutor {
+
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String @NotNull [] args) {
         if(!sender.hasPermission("dami-bans.warn")){
@@ -45,34 +46,16 @@ public class WarnCommand implements TabExecutor {
         );
 
         sendMessageWithPrefix(sender, "&fHas advertido a &e" + player.getName() + "&f por: &e" + reason, prefix);
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            sendMessage(p, "<underline:#9131de");
-            sendMessage(p, "<center>#9131de&lADVERTENCIA");
-            sendMessage(p, "");
-            sendMessage(p, "<center>#9131de&lJugador");
-            sendMessage(p, "<center>&f" + player.getName());
-            sendMessage(p, "");
-            sendMessage(p, "<center>#9131de&lRazón");
-            sendMessage(p, "<center>&f" + reason);
-            sendMessage(p, "");
-            sendMessage(p, "<center>#9131de&lStaff");
-            sendMessage(p, "<center>&f" + (sender instanceof Player ? sender.getName() : "Consola"));
-            sendMessage(p, "<underline:#9131de");
-
-        }
-
-        sendMessage(Bukkit.getConsoleSender(), "<underline:#9131de");
-        sendMessage(Bukkit.getConsoleSender(), "<center>#9131de&lADVERTENCIA");
-        sendMessage(Bukkit.getConsoleSender(), "");
-        sendMessage(Bukkit.getConsoleSender(), "<center>#9131de&lJugador");
-        sendMessage(Bukkit.getConsoleSender(), "<center>&f" + player.getName());
-        sendMessage(Bukkit.getConsoleSender(), "");
-        sendMessage(Bukkit.getConsoleSender(), "<center>#9131de&lRazón");
-        sendMessage(Bukkit.getConsoleSender(), "<center>&f" + reason);
-        sendMessage(Bukkit.getConsoleSender(), "");
-        sendMessage(Bukkit.getConsoleSender(), "<center>#9131de&lStaff");
-        sendMessage(Bukkit.getConsoleSender(), "<center>&f" + (sender instanceof Player ? sender.getName() : "Consola"));
-        sendMessage(Bukkit.getConsoleSender(), "<underline:#9131de");
+        Bukkit.broadcastMessage(colorize("#C96FFF&m&l*                                     *"));
+        Bukkit.broadcastMessage(colorize("        #C96FFF&lADVERTENCIA"));
+        Bukkit.broadcastMessage(colorize(""));
+        Bukkit.broadcastMessage(colorize("        #C96FFFJugador"));
+        Bukkit.broadcastMessage(colorize("         &7» &f" + player.getName()));
+        Bukkit.broadcastMessage(colorize("        #C96FFFRazón"));
+        Bukkit.broadcastMessage(colorize("         &7» &f" + reason+" ("+DataManager.getPunishmentCountForReasonAndType(player.getName(), reason, PunishmentType.WARN)+"/5)"));
+        Bukkit.broadcastMessage(colorize("        #C96FFFStaff"));
+        Bukkit.broadcastMessage(colorize("         &7» &f" + (sender instanceof Player ? sender.getName() : "Consola")));
+        Bukkit.broadcastMessage(colorize("#C96FFF&m&l*                                     *"));
         return false;
     }
 
@@ -83,7 +66,7 @@ public class WarnCommand implements TabExecutor {
                     Arrays.stream(sender.getServer().getOfflinePlayers()).map(OfflinePlayer::getName).toList(), args[0]
             );
         } else if (args.length > 1) {
-            return List.of("<Razón...>");
+            return List.of("Mal Comportamiento", "Toxicidad", "Spam", "Flood");
         }
         return List.of();
     }

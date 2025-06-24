@@ -70,39 +70,21 @@ public class MuteCommand implements TabExecutor {
                 PunishmentType.MUTE
         );
         sendMessageWithPrefix(sender, "&fHas silenciado a &e" + player.getName() + "&f por: &e" + (!reason.isBlank() ? reason : "Sin Razón") + " &fdurante: &e" + (seconds == -1 ? "tiempo permanente" : duration), prefix);
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            sendMessage(p, "<underline:#9131de");
-            sendMessage(p, "<center>#9131de&lMUTEO");
-            sendMessage(p, "");
-            sendMessage(p, "<center>#9131de&lJugador");
-            sendMessage(p, "<center>&f" + player.getName());
-            sendMessage(p, "");
-            sendMessage(p, "<center>#9131de&lRazón");
-            sendMessage(p, "<center>&f" + reason);
-            sendMessage(p, "");
-            sendMessage(p, "<center>#9131de&lDuración");
-            sendMessage(p, "<center>&f" + (seconds == -1 ? "Permanente" : duration));
-            sendMessage(p, "");
-            sendMessage(p, "<center>#9131de&lStaff");
-            sendMessage(p, "<center>&f" + (sender instanceof Player ? sender.getName() : "Consola"));
-            sendMessage(p, "<underline:#9131de");
+        Bukkit.broadcastMessage(colorize("#C96FFF&m&l*                                     *"));
+        Bukkit.broadcastMessage(colorize("        #C96FFF&lMUTEO "+
+                (seconds == -1 ? "&cPERMA" : "")));
+        Bukkit.broadcastMessage(colorize(""));
+        Bukkit.broadcastMessage(colorize("        #C96FFFJugador"));
+        Bukkit.broadcastMessage(colorize("         &7» &f" + player.getName()));
+        Bukkit.broadcastMessage(colorize("        #C96FFFRazón"));
+        Bukkit.broadcastMessage(colorize("         &7» &f" + reason+" ("+DataManager.getPunishmentCountForReasonAndType(player.getName(), reason, PunishmentType.WARN)+"/5)"));
+        if(seconds != -1){
+            Bukkit.broadcastMessage(colorize("        #C96FFFDuración"));
+            Bukkit.broadcastMessage(colorize("         &7» &f" + duration));
         }
-
-        sendMessage(Bukkit.getConsoleSender(), "<underline:#9131de");
-        sendMessage(Bukkit.getConsoleSender(), "<center>#9131de&lMUTEO");
-        sendMessage(Bukkit.getConsoleSender(), "");
-        sendMessage(Bukkit.getConsoleSender(), "<center>#9131de&lJugador");
-        sendMessage(Bukkit.getConsoleSender(), "<center>&f" + player.getName());
-        sendMessage(Bukkit.getConsoleSender(), "");
-        sendMessage(Bukkit.getConsoleSender(), "<center>#9131de&lRazón");
-        sendMessage(Bukkit.getConsoleSender(), "<center>&f" + reason);
-        sendMessage(Bukkit.getConsoleSender(), "");
-        sendMessage(Bukkit.getConsoleSender(), "<center>#9131de&lDuración");
-        sendMessage(Bukkit.getConsoleSender(), "<center>&f" + (seconds == -1 ? "Permanente" : duration));
-        sendMessage(Bukkit.getConsoleSender(), "");
-        sendMessage(Bukkit.getConsoleSender(), "<center>#9131de&lStaff");
-        sendMessage(Bukkit.getConsoleSender(), "<center>&f" + (sender instanceof Player ? sender.getName() : "Consola"));
-        sendMessage(Bukkit.getConsoleSender(), "<underline:#9131de");
+        Bukkit.broadcastMessage(colorize("        #C96FFFStaff"));
+        Bukkit.broadcastMessage(colorize("         &7» &f" + (sender instanceof Player ? sender.getName() : "Consola")));
+        Bukkit.broadcastMessage(colorize("#C96FFF&m&l*                                     *"));
         return false;
     }
 
