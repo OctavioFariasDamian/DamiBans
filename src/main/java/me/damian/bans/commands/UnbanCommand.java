@@ -1,5 +1,6 @@
 package me.damian.bans.commands;
 
+import me.damian.bans.DamiBans;
 import me.damian.bans.managers.DataManager;
 import me.damian.bans.model.Punishment;
 import me.damian.bans.model.PunishmentType;
@@ -7,6 +8,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,6 +40,7 @@ public class UnbanCommand implements TabExecutor {
         }
 
         sendMessageWithPrefix(commandSender, "&fHas desbaneado al jugador &e" + playerName, prefix);
+        DamiBans.sendMessageToLog("**"+playerName+"** ha sido desbaneado por **"+(commandSender instanceof Player ? commandSender.getName() : "Consola")+"**");
         return false;
     }
 

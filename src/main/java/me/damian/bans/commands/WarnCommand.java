@@ -1,5 +1,6 @@
 package me.damian.bans.commands;
 
+import me.damian.bans.DamiBans;
 import me.damian.bans.managers.DataManager;
 import me.damian.bans.model.PunishmentType;
 import org.bukkit.Bukkit;
@@ -56,6 +57,7 @@ public class WarnCommand implements TabExecutor {
         Bukkit.broadcastMessage(colorize("        #C96FFFStaff"));
         Bukkit.broadcastMessage(colorize("         &7» &f" + (sender instanceof Player ? sender.getName() : "Consola")));
         Bukkit.broadcastMessage(colorize("#C96FFF&m&l*                                     *"));
+        DamiBans.sendMessageToLog("**"+player.getName()+"** ha sido advertido por **"+(sender instanceof Player ? sender.getName() : "Consola")+"** | "+reason+" ("+DataManager.getPunishmentCountForReasonAndType(player.getName(), reason, PunishmentType.WARN)+"/5)");
         return false;
     }
 

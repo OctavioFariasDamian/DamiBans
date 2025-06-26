@@ -81,5 +81,11 @@
             <version>1.18.38</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.supreme</groupId>
+            <artifactId>bot</artifactId>
+            <version>1.2</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>

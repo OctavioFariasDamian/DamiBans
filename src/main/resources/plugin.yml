@@ -4,6 +4,8 @@ version: '1.0'
 main: me.damian.bans.DamiBans
 api-version: '1.21'
 authors: [ DamianFarias ]
+depend:
+  - SupremeBot
 description: Punishment plugin
 commands:
   kick:

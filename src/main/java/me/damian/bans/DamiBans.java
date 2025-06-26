@@ -1,15 +1,19 @@
 package me.damian.bans;
 
+import com.supreme.bot.SupremeBot;
 import lombok.Getter;
 import me.damian.bans.commands.*;
 import me.damian.bans.listeners.PlayerListeners;
 import me.damian.bans.listeners.MuteListener;
 import me.damian.bans.managers.DataManager;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class DamiBans extends JavaPlugin {
 
     public static String prefix = "#FF0000&lM#FF170C&lo#FF2E18&ld#FF4624&le#FF5D30&lr#FF743C&la#FF8B48&lc#FF8B48&li#FF8B48&ló#FF8B48&ln &7» &f";
+    public static TextChannel logsChannel;
 
     @Getter
     private static DamiBans instance;
@@ -25,6 +29,10 @@ public final class DamiBans extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerListeners(), this);
         getServer().getPluginManager().registerEvents(new MuteListener(), this);
         registerCommands();
+
+        if(SupremeBot.getJda().getTextChannelById(1362878828422238459L) != null) {
+            DamiBans.logsChannel = SupremeBot.getJda().getTextChannelById(1362878828422238459L);
+        }
     }
 
     @SuppressWarnings("DataFlowIssue")
@@ -58,11 +66,18 @@ public final class DamiBans extends JavaPlugin {
 
         getCommand("punishments").setExecutor(new PunishmentsCommand());
         getCommand("punishments").setTabCompleter(new PunishmentsCommand());
-
     }
 
-    @Override
-    public void onDisable() {
-
+    public static void sendMessageToLog(String s){
+        if (logsChannel != null) {
+            logsChannel.sendMessageEmbeds(
+                    new EmbedBuilder()
+                            .setColor(0x78ff44)
+                            .setDescription(s)
+                            .build()
+            ).queue();
+        } else {
+            getInstance().getLogger().warning("No se pudo enviar el mensaje al canal de logs: " + s);
+        }
     }
 }
